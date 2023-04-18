@@ -28,13 +28,18 @@ class WebPage:
             # Parse the HTML content using BeautifulSoup
 
 
-
-
             titles = soup.find_all(
-                "div", class_="x11i5rnm xat24cr x1mh8g0r x1vvkbs xdj266r x126k92a")
+                "a", class_="x1i10hfl xjbqb8w x6umtig x1b1mbwd xaqea5y xav7gou x9f619 x1ypdohk xt0psk2 xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz xt0b8zv xi81zsa xo1l8bm")
 
-            print(len(titles))
+            # Extract href attribute values and store them in a list
+            href_list = []
+            for anchor_tag in titles:
+                href = anchor_tag['href']
+                href_list.append(href)
 
+            # Print the list of href links
+            print('Href Links:')
+            print(href_list)
 
 
             # Create a list to store the extracted information
