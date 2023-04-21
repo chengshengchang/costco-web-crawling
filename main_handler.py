@@ -1,30 +1,15 @@
 import pandas as pd
 import time
-from pandas.core.frame import DataFrame
-from selenium.webdriver.common.action_chains import ActionChains
-from bs4 import BeautifulSoup as Soup
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.wait import WebDriverWait
 from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver import DesiredCapabilities
 from selenium.webdriver.common.keys import Keys
 from crawling import WebPage
-import csv
-import requests
 from bs4 import BeautifulSoup
-import logging
-import datetime
 from lib import config , logger
 from dataclasses import dataclass
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
-import requests
-from fake_useragent import UserAgent
+
 
 
 @dataclass
@@ -110,33 +95,44 @@ def main():
     driverfunc.maximize_window()
 
     try:
+        # To fb webpage
         driverfunc.to_url(config.LOGIN_URL)
+        # logging to fb
         driverfunc.logging()
         # To target url
         driverfunc.to_url(config.TARGET_URL)
-        time.sleep(2)
-
 
     except Exception as e:
         driver.close()
         raise Exception(e)
 
+    # Set default height
     temp_height = 0
-    # while True:
-    for i in range(10):
+
+    # Go through all the way down
+    while True:
+        # Create driver func obj
         driverfunc = DriverFunc(driver)
         driverfunc.scroll_down()
-        # driverfunc.expand_post()
-
         check_height = driverfunc.return_page_top_offset()
 
         if temp_height == check_height:
             break
         temp_height = check_height
 
+    # Extract sublink
+    sublink_soup = BeautifulSoup(driver.page_source, "html.parser")
+    sublink = WebPage.crawl(sublink_soup)
 
-    soup = BeautifulSoup(driver.page_source, "html.parser")
-    WebPage.crawl(soup)
+    # define dataframe , columns
+    link_informatation_df = pd.DataFrame()
+
+    for idx , link in enumerate(sublink):
+        WebPage.extract(link)
+
+
+
+
 
 
 if __name__ == '__main__':
